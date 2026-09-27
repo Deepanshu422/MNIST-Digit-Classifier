@@ -1,6 +1,4 @@
-Here is the updated, accurate `README.md` reflecting your real files (`train.py`, `data.py`), your live Hugging Face deployment link, and the exact commands to run and retrain the project.
 
-```markdown
 # 🖊️ Handwritten Digit Recognition (MNIST)
 
 An interactive, deep learning-powered handwritten digit classifier built with **TensorFlow / Keras** and an intuitive **Gradio** web interface.
@@ -14,6 +12,11 @@ Users can draw any single digit ($0$–$9$) on a canvas and receive real-time cl
 Try the interactive model directly in your browser without installing anything locally:
 
 👉 **[Live Demo on Hugging Face Spaces](https://huggingface.co/spaces/deepanshu422/mnist-digit-classifier)**
+
+Demo Images: 
+![alt text](images/demo-example-1.png)
+![alt text](images/demo-example-2.png)
+![alt text](images/demo-example-3.png)
 
 ---
 
