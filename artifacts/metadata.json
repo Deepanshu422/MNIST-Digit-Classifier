@@ -1,8 +1,8 @@
 {
     "model_version": "1.0.0",
-    "test_accuracy": 0.975,
-    "test_loss": 0.0834,
+    "test_accuracy": 0.9741,
+    "test_loss": 0.0882,
     "epochs": 5,
     "batch_size": 64,
-    "timestamp_utc": "2026-09-27T09:25:32Z"
+    "timestamp_utc": "2026-09-27T14:49:58Z"
 }

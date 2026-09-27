@@ -29,19 +29,21 @@ def classify_drawing(sketch):
     if sketch is None:
         return {}, None
 
-    # Fix: Extract the composite image from the Gradio Sketchpad dict
+    # Safe extraction without using boolean 'or' on numpy array
     if isinstance(sketch, dict):
-        img_data = sketch.get("composite") or sketch.get("image")
+        if "composite" in sketch and sketch["composite"] is not None:
+            img_data = sketch["composite"]
+        elif "image" in sketch and sketch["image"] is not None:
+            img_data = sketch["image"]
+        else:
+            return {}, None
     else:
         img_data = sketch
-
-    if img_data is None:
-        return {}, None
 
     # Preprocess into (1, 28, 28)
     tensor = preprocess_image(img_data)
 
-    # If canvas is completely blank
+    # Agar canvas blank hai
     if tensor.sum() == 0:
         return {"Draw a digit first": 1.0}, None
 
@@ -49,7 +51,7 @@ def classify_drawing(sketch):
     result = predictor.predict(tensor)
     confidences = {str(digit): float(prob) for digit, prob in result["class_probabilities"].items()}
 
-    # Show the 28x28 processed image the model actually saw
+    # Model ne jo dekha uska 28x28 grayscale preview
     preview = (tensor[0] * 255).astype(np.uint8)
 
     return confidences, preview
