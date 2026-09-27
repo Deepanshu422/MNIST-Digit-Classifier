@@ -29,8 +29,17 @@ def classify_drawing(sketch):
     if sketch is None:
         return {}, None
 
+    # Fix: Extract the composite image from the Gradio Sketchpad dict
+    if isinstance(sketch, dict):
+        img_data = sketch.get("composite") or sketch.get("image")
+    else:
+        img_data = sketch
+
+    if img_data is None:
+        return {}, None
+
     # Preprocess into (1, 28, 28)
-    tensor = preprocess_image(sketch)
+    tensor = preprocess_image(img_data)
 
     # If canvas is completely blank
     if tensor.sum() == 0:
