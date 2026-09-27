@@ -4,20 +4,33 @@ from pathlib import Path
 # Add project root directory to sys.path
 sys.path.append(str(Path(__file__).resolve().parent))
 
+# 1. ZeroGPU compatibility (Cloud par GPU, local par fallback)
+try:
+    import spaces
+except ImportError:
+    class spaces:
+        @staticmethod
+        def GPU(func=None, **kwargs):
+            if func is None:
+                return lambda f: f
+            return func
+
 import gradio as gr
 import numpy as np
 from src.backend.preprocessor import preprocess_image
 from src.backend.predictor import predictor
 
+# Startup check satisfy karne ke liye decorator
+@spaces.GPU
 def classify_drawing(sketch):
     if sketch is None:
         return {}, None
 
-    # 1. Ensure model is loaded safely
+    # Lazy-load model inside execution context
     if predictor.model is None:
         predictor.load()
 
-    # 2. Extract image from Gradio Sketchpad dictionary
+    # Safe extraction without numpy boolean 'or'
     img_data = None
     if isinstance(sketch, dict):
         if "composite" in sketch and sketch["composite"] is not None:
@@ -33,28 +46,26 @@ def classify_drawing(sketch):
         return {"Draw a digit first": 1.0}, None
 
     try:
-        # 3. Preprocess into (1, 28, 28)
+        # Preprocess into (1, 28, 28)
         tensor = preprocess_image(img_data)
 
-        # 4. Check if canvas is completely blank
+        # Check for blank canvas
         if tensor.sum() == 0:
             return {"Draw a digit first": 1.0}, None
 
-        # 5. Run inference
+        # Predict
         result = predictor.predict(tensor)
         confidences = {
             str(digit): float(prob)
             for digit, prob in result["class_probabilities"].items()
         }
 
-        # 6. Show the 28x28 processed image the model actually saw
+        # Grayscale preview (28x28)
         preview = (tensor[0] * 255).astype(np.uint8)
-
         return confidences, preview
 
     except Exception as e:
-        # Fallback to display actual error on UI instead of generic red badge
-        print(f"[!] Inference Error: {e}")
+        print(f"[!] Inference Exception: {e}")
         return {f"Error: {str(e)}": 1.0}, None
 
 
@@ -82,5 +93,5 @@ with gr.Blocks(title="MNIST Digit Classifier") as demo:
         outputs=[label_output, preview_img],
     )
 
-if __name__ == "__main__":
-    demo.launch(ssr_mode=True)
+# ssr_mode=False taaki node server shutdown issue na aaye
+demo.launch(ssr_mode=False)
