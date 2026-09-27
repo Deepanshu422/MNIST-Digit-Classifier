@@ -4,6 +4,16 @@ from pathlib import Path
 # Add project root to sys.path
 sys.path.append(str(Path(__file__).resolve().parent))
 
+# 1. Import spaces for Hugging Face ZeroGPU compatibility
+try:
+    import spaces
+except ImportError:
+    # Dummy fallback when running locally without spaces installed
+    class spaces:
+        @staticmethod
+        def GPU(func):
+            return func
+
 import gradio as gr
 import numpy as np
 from src.backend.preprocessor import preprocess_image
@@ -13,6 +23,8 @@ from src.backend.predictor import predictor
 if predictor.model is None:
     predictor.load()
 
+# 2. Add @spaces.GPU decorator here!
+@spaces.GPU
 def classify_drawing(sketch):
     if sketch is None:
         return {}, None
@@ -52,5 +64,4 @@ with gr.Blocks(title="MNIST Digit Classifier") as demo:
         outputs=[label_output, preview_img]
     )
 
-if __name__ == "__main__":
-    demo.launch(ssr_mode=False)
+demo.launch(ssr_mode=False)
