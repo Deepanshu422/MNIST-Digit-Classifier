@@ -83,4 +83,4 @@ with gr.Blocks(title="MNIST Digit Classifier") as demo:
     )
 
 if __name__ == "__main__":
-    demo.launch(ssr_mode=False)
+    demo.launch(ssr_mode=True)
