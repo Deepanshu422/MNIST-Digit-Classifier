@@ -1,9 +1,4 @@
 tensorflow-cpu==2.18.0
-fastapi==0.115.6
-uvicorn[standard]==0.34.0
-pydantic==2.10.4
-pillow==11.1.0
-numpy>=1.26.0,<2.0.0
-gradio==5.12.0
-python-multipart==0.0.20
-requests==2.32.3
+numpy<2.0.0,>=1.26.0
+pillow>=10.0.0
+pydantic>=2.0.0
